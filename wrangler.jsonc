@@ -1,0 +1,21 @@
+{
+  "name": "partner-validation-platform",
+  "compatibility_date": "2026-06-16",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+  },
+  "d1_databases": [
+    {
+      "binding": "partner_integration_db",
+      "database_name": "partner_integration_db",
+      "database_id": "eaebe7d3-ae7f-4030-9951-d1dd8ccc1ed5",
+      "remote": true,
+    },
+    {
+      "binding": "DB",
+      "database_name": "partner_integration_db",
+      "database_id": "77a3df65-8a8c-454d-a561-a095335cda9c",
+    },
+  ],
+}

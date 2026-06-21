@@ -9,7 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@cloudflare/d1": "^1.4.1",
     "@hookform/resolvers": "^5.4.0",
+    "@opennextjs/cloudflare": "^1.19.11",
     "@tanstack/react-query": "^5.101.0",
     "better-auth": "^1.6.19",
     "class-variance-authority": "^0.7.1",

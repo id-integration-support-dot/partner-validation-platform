@@ -3,10 +3,16 @@
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-06-16",
   "compatibility_flags": ["nodejs_compat"],
+
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS",
   },
+
+  "vars": {
+    "BETTER_AUTH_URL": "https://partner-platform.sppintegration.com",
+  },
+
   "d1_databases": [
     {
       "binding": "DB",

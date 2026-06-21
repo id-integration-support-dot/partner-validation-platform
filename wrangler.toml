@@ -1,0 +1,7 @@
+"name": "partner-platform",
+compatibility_date = "2026-06-16"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "partner_integration_db"
+database_id = "77a3df65-8a8c-454d-a561-a095335cda9c"

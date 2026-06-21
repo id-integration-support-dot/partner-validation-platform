@@ -4,14 +4,9 @@
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": ".open-next/assets",
+    "binding": "ASSETS",
   },
   "d1_databases": [
-    {
-      "binding": "partner_integration_db",
-      "database_name": "partner_integration_db",
-      "database_id": "eaebe7d3-ae7f-4030-9951-d1dd8ccc1ed5",
-      "remote": true,
-    },
     {
       "binding": "DB",
       "database_name": "partner_integration_db",

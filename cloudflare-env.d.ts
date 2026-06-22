@@ -11,6 +11,7 @@ declare namespace Cloudflare {
 }
 interface CloudflareEnv extends __BaseEnv_CloudflareEnv {
   BETTER_AUTH_SECRET: string;
+  RESEND_API_KEY: string;
 }
 type StringifyValues<EnvType extends Record<string, unknown>> = {
   [Binding in keyof EnvType]: EnvType[Binding] extends string

@@ -44,7 +44,7 @@ export default function ForgotPasswordPage() {
           <p className="mt-2 text-xs text-neutral-400">
             Cek folder spam kalau tidak muncul di inbox.
           </p>
-          <a
+          
             href="/login"
             className="mt-4 inline-block text-sm font-medium text-neutral-900 underline"
           >

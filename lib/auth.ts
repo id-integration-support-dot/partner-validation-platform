@@ -5,9 +5,6 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "./db";
 import { schema } from "@/db/schema";
 
-// Dibuat sebagai factory function (bukan instance tunggal di top-level file)
-// karena binding D1 dan env var Cloudflare cuma bisa diakses lewat
-// request context — bukan saat module pertama kali di-load.
 export async function getAuth() {
   const db = await getDb();
   const { env } = await getCloudflareContext({ async: true });
@@ -15,6 +12,9 @@ export async function getAuth() {
   return betterAuth({
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.BETTER_AUTH_URL,
+    // types/env.ts — tambahkan baris ini
+RESEND_API_KEY: string;
+    
 
     database: drizzleAdapter(db, {
       provider: "sqlite",
@@ -23,8 +23,46 @@ export async function getAuth() {
 
     emailAndPassword: {
       enabled: true,
-      // partner baru harus nunggu di-approve admin dulu sebelum bisa login
       autoSignIn: false,
+      // Aktifkan forgot password
+      sendResetPassword: async ({ user, url }) => {
+        await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${env.RESEND_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            // Kalau sudah verifikasi domain di Resend, ganti dengan:
+            // from: "noreply@sppintegration.com"
+            from: "onboarding@resend.dev",
+            to: user.email,
+            subject: "Reset Password — Partner Integration Platform",
+            html: `
+              <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 24px;">
+                <h2 style="font-size: 18px; font-weight: 600; color: #111;">Reset Password</h2>
+                <p style="color: #555; font-size: 14px; line-height: 1.6;">
+                  Halo ${user.name},<br/><br/>
+                  Kami menerima permintaan untuk mereset password akun Anda di
+                  Partner Integration Platform.
+                </p>
+                <a
+                  href="${url}"
+                  style="display: inline-block; margin: 16px 0; padding: 10px 20px;
+                         background: #111; color: #fff; text-decoration: none;
+                         border-radius: 6px; font-size: 14px; font-weight: 500;"
+                >
+                  Reset Password
+                </a>
+                <p style="color: #999; font-size: 12px;">
+                  Link ini berlaku selama 1 jam. Kalau Anda tidak meminta reset password,
+                  abaikan email ini.
+                </p>
+              </div>
+            `,
+          }),
+        });
+      },
     },
 
     user: {
@@ -39,10 +77,7 @@ export async function getAuth() {
       expiresIn: 60 * 60 * 24 * 7, // 7 hari
     },
 
-    // --- Single Active Session ---
-    // Setiap kali sesi baru berhasil dibuat (login baru), semua sesi LAIN
-    // milik user yang sama langsung dihapus. Efeknya: device/browser lama
-    // otomatis ter-logout begitu user login dari device baru.
+    // Single Active Session
     databaseHooks: {
       session: {
         create: {

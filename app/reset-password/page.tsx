@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
-import { signIn } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth-client";
 
-export default function LoginPage() {
+function ResetPasswordForm() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -16,51 +18,71 @@ export default function LoginPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    setLoading(true);
 
-    const { error: signInError } = await signIn.email({ email, password });
-
-    setLoading(false);
-
-    if (signInError) {
-      setError(signInError.message ?? "Email atau password salah.");
+    if (!token) {
+      setError("Link reset password tidak valid atau sudah kadaluarsa.");
       return;
     }
 
-    router.push("/dashboard");
-    router.refresh();
+    setLoading(true);
+
+    const { error: resetError } = await authClient.resetPassword({
+      newPassword: password,
+      token,
+    });
+
+    setLoading(false);
+
+    if (resetError) {
+      setError(resetError.message ?? "Gagal reset password. Coba minta link baru.");
+      return;
+    }
+
+    router.push("/login?reset=success");
+  }
+
+  if (!token) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4">
+        <div className="w-full max-w-sm rounded-lg border border-neutral-200 bg-white p-8 text-center shadow-sm">
+          <h1 className="text-lg font-medium text-neutral-900">
+            Link tidak valid
+          </h1>
+          <p className="mt-2 text-sm text-neutral-500">
+            Link reset password ini tidak valid atau sudah kadaluarsa. Silakan
+            minta link baru.
+          </p>
+          <a
+            href="/forgot-password"
+            className="mt-4 inline-block text-sm font-medium text-neutral-900 underline"
+          >
+            Minta link baru
+          </a>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4">
       <div className="w-full max-w-sm rounded-lg border border-neutral-200 bg-white p-8 shadow-sm">
-        <h1 className="text-xl font-medium text-neutral-900">Masuk</h1>
+        <h1 className="text-xl font-medium text-neutral-900">
+          Buat password baru
+        </h1>
         <p className="mt-1 text-sm text-neutral-500">
-          Partner Integration Platform
+          Minimal 8 karakter.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-neutral-700">
-              Email
-            </label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-neutral-700">
-              Password
+              Password baru
             </label>
             <div className="relative mt-1">
               <input
                 type={showPassword ? "text" : "password"}
                 required
+                minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full rounded-md border border-neutral-300 px-3 py-2 pr-10 text-sm focus:border-neutral-900 focus:outline-none"
@@ -82,28 +104,18 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
           >
-            {loading ? "Memproses..." : "Masuk"}
+            {loading ? "Menyimpan..." : "Simpan password baru"}
           </button>
         </form>
-
-        <div className="mt-4 flex flex-col gap-2 text-center text-sm text-neutral-500">
-          <a
-            href="/forgot-password"
-            className="font-medium text-neutral-900 underline"
-          >
-            Lupa password?
-          </a>
-          <p>
-            Belum punya akun?{" "}
-            <a
-              href="/register"
-              className="font-medium text-neutral-900 underline"
-            >
-              Daftar sebagai partner
-            </a>
-          </p>
-        </div>
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }

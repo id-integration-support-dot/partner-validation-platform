@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 import { signUp } from "@/lib/auth-client";
 
 export default function RegisterPage() {
-  const router = useRouter();
   const [name, setName] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -23,8 +23,6 @@ export default function RegisterPage() {
       name,
       email,
       password,
-      // field tambahan ini ditolak Better Auth kalau "input: false" di server config —
-      // companyName memang sengaja kita biarkan bisa diisi user, lihat lib/auth.ts
       companyName,
     } as Parameters<typeof signUp.email>[0]);
 
@@ -112,14 +110,24 @@ export default function RegisterPage() {
             <label className="block text-sm font-medium text-neutral-700">
               Password
             </label>
-            <input
-              type="password"
-              required
-              minLength={8}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
-            />
+            <div className="relative mt-1">
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-md border border-neutral-300 px-3 py-2 pr-10 text-sm focus:border-neutral-900 focus:outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+            <p className="mt-1 text-xs text-neutral-400">Minimal 8 karakter</p>
           </div>
 
           {error && <p className="text-sm text-red-600">{error}</p>}

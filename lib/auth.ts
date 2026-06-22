@@ -12,9 +12,6 @@ export async function getAuth() {
   return betterAuth({
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.BETTER_AUTH_URL,
-    // types/env.ts — tambahkan baris ini
-RESEND_API_KEY: string;
-    
 
     database: drizzleAdapter(db, {
       provider: "sqlite",

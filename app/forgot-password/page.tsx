@@ -33,18 +33,15 @@ export default function ForgotPasswordPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4">
         <div className="w-full max-w-sm rounded-lg border border-neutral-200 bg-white p-8 text-center shadow-sm">
-          <h1 className="text-lg font-medium text-neutral-900">
-            Email terkirim
-          </h1>
+          <h1 className="text-lg font-medium text-neutral-900">Email terkirim</h1>
           <p className="mt-2 text-sm text-neutral-500">
-            Kalau email <span className="font-medium">{email}</span> terdaftar
-            di sistem kami, Anda akan menerima link untuk reset password dalam
-            beberapa menit.
+            Kalau email {email} terdaftar di sistem kami, Anda akan menerima
+            link untuk reset password dalam beberapa menit.
           </p>
           <p className="mt-2 text-xs text-neutral-400">
             Cek folder spam kalau tidak muncul di inbox.
           </p>
-          
+          <a
             href="/login"
             className="mt-4 inline-block text-sm font-medium text-neutral-900 underline"
           >

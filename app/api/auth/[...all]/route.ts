@@ -1,4 +1,4 @@
-import { getAuth } from "@/lib/auth";
+import { getAuth } from "@/lib/auth/auth";
 
 async function handler(req: Request) {
   const auth = await getAuth();

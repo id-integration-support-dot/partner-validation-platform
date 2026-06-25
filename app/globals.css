@@ -18,6 +18,9 @@
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
+  
+  /* Tambahan warna hex agar sinkron dengan class tema korporat */
+  --brand-blue: #0d5ddf;
 }
 
 @theme inline {
@@ -29,9 +32,15 @@
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  
+  /* Memetakan warna border kustom agar @apply border-border bekerja */
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  
+  /* Mendaftarkan warna kustom agar class bg-[#0d5ddf] atau text-[#0d5ddf] bisa di-fallback */
+  --color-brand: var(--brand-blue);
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -39,9 +48,11 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    /* Menggunakan sintaks penulisan border v4 yang aman */
+    border-color: var(--border);
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--background);
+    color: var(--foreground);
   }
 }

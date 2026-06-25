@@ -1,107 +1,64 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff } from "lucide-react";
-import { signIn } from "@/lib/auth/auth-client";
+import { Building2, Shield, Zap } from "lucide-react";
 
-export default function LoginPage() {
+export default function LoginSelectionPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-
-    const { error: signInError } = await signIn.email({ email, password });
-
-    setLoading(false);
-
-    if (signInError) {
-      setError(signInError.message ?? "Email atau password salah.");
-      return;
-    }
-
-    router.push("/dashboard");
-    router.refresh();
-  }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4">
-      <div className="w-full max-w-sm rounded-lg border border-neutral-200 bg-white p-8 shadow-sm">
-        <h1 className="text-xl font-medium text-neutral-900">Masuk</h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          Partner Integration Platform
-        </p>
-
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-neutral-700">
-              Email
-            </label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-900 focus:outline-none"
-            />
+    <div className="flex min-h-screen items-center justify-center bg-[#f1f5f9] px-4">
+      <div className="w-full max-w-[500px] rounded-3xl border border-slate-100 bg-white p-12 shadow-sm">
+        <div className="flex flex-col items-center text-center">
+          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-brand text-white shadow-sm">
+            <Zap className="h-8 w-8" strokeWidth={2.5} />
           </div>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">ShopeePay Partner Hub</h1>
+          <p className="mt-2 text-sm text-slate-400">Pilih tipe akun untuk masuk</p>
+        </div>
 
-          <div>
-            <label className="block text-sm font-medium text-neutral-700">
-              Password
-            </label>
-            <div className="relative mt-1">
-              <input
-                type={showPassword ? "text" : "password"}
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-md border border-neutral-300 px-3 py-2 pr-10 text-sm focus:border-neutral-900 focus:outline-none"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
-              >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            </div>
-          </div>
-
-          {error && <p className="text-sm text-red-600">{error}</p>}
-
+        <div className="mt-10 space-y-4">
+          {/* Mengarahkan langsung ke sub-folder partner */}
           <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+            type="button"
+            onClick={() => router.push("/login/partner")}
+            className="group flex w-full items-start gap-4 rounded-2xl border border-slate-200 bg-white p-6 text-left transition duration-200 hover:border-brand/40 hover:shadow-md hover:shadow-slate-100"
           >
-            {loading ? "Memproses..." : "Masuk"}
+            <div className="mt-0.5 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 transition-colors group-hover:bg-emerald-100">
+              <Building2 size={22} />
+            </div>
+            <div>
+              <p className="text-base font-semibold text-slate-800">Partner</p>
+              <p className="mt-1 text-sm text-slate-400 leading-relaxed">
+                Akses portal pengujian layanan, upload dokumen, dan lihat panduan integrasi API.
+              </p>
+            </div>
           </button>
-        </form>
 
-        <div className="mt-4 flex flex-col gap-2 text-center text-sm text-neutral-500">
-          <a
-            href="/forgot-password"
-            className="font-medium text-neutral-900 underline"
+          {/* Mengarahkan langsung ke sub-folder admin */}
+          <button
+            type="button"
+            onClick={() => router.push("/login/admin")}
+            className="group flex w-full items-start gap-4 rounded-2xl border border-slate-200 bg-white p-6 text-left transition duration-200 hover:border-brand/40 hover:shadow-md hover:shadow-slate-100"
           >
-            Lupa password?
-          </a>
-          <p>
-            Belum punya akun?{" "}
-            <a
-              href="/register"
-              className="font-medium text-neutral-900 underline"
-            >
-              Daftar sebagai partner
-            </a>
-          </p>
+            <div className="mt-0.5 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-brand transition-colors group-hover:bg-blue-100">
+              <Shield size={22} />
+            </div>
+            <div>
+              <p className="text-base font-semibold text-slate-800">Administrator</p>
+              <p className="mt-1 text-sm text-slate-400 leading-relaxed">
+                Kelola partner, review submission, dan akses dashboard.
+              </p>
+            </div>
+          </button>
+        </div>
+
+        <div className="mt-10 text-center text-sm text-slate-400">
+          Belum punya akun?{" "}
+          <Link href="/register" className="font-semibold text-brand hover:underline">
+            Daftar di sini
+          </Link>
         </div>
       </div>
     </div>

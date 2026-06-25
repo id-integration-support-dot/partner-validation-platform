@@ -25,27 +25,62 @@ export default async function AdminDashboardPage() {
   }  
   
   return (  
-    <div className="min-h-screen bg-neutral-50 px-4 py-10">  
-      <div className="mx-auto max-w-3xl">  
-        <div className="flex items-center justify-between">  
-          <h1 className="text-xl font-medium text-neutral-900">  
-            Admin Dashboard  
-          </h1>  
+    <div className="min-h-screen bg-neutral-50">  
+      <div className="mx-auto max-w-6xl px-6 py-8">  
+        <div className="mb-8 flex items-center justify-between">  
+          <div>  
+            <h1 className="text-2xl font-semibold text-neutral-900">  
+              Admin Dashboard  
+            </h1>  
+            <p className="mt-1 text-sm text-neutral-500">  
+              Kelola approval partner dari dashboard administrator.  
+            </p>  
+          </div>  
           <SignOutButton />  
         </div>  
   
-        <div className="mt-6 rounded-lg border border-neutral-200 bg-white p-6">  
-          <p className="text-sm text-neutral-600">  
-            Selamat datang di dashboard administrator.  
-          </p>  
+        <div className="grid gap-6 md:grid-cols-2">  
+          <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">  
+            <h2 className="text-sm font-medium text-neutral-500">  
+              Administrator  
+            </h2>  
+            <div className="mt-4 space-y-3 text-sm">  
+              <div className="flex justify-between border-b border-neutral-100 pb-3">  
+                <span className="text-neutral-500">Nama</span>  
+                <span className="font-medium text-neutral-900">  
+                  {user.name ?? "-"}  
+                </span>  
+              </div>  
+              <div className="flex justify-between border-b border-neutral-100 pb-3">  
+                <span className="text-neutral-500">Email</span>  
+                <span className="font-medium text-neutral-900">  
+                  {user.email ?? "-"}  
+                </span>  
+              </div>  
+              <div className="flex justify-between">  
+                <span className="text-neutral-500">Role</span>  
+                <span className="font-medium text-neutral-900">  
+                  {user.role ?? "-"}  
+                </span>  
+              </div>  
+            </div>  
+          </div>  
   
-          <div className="mt-4">  
-            <Link  
-              href="/admin/partners"  
-              className="inline-flex rounded-md bg-black px-4 py-2 text-sm text-white"  
-            >  
-              Lihat Request Register Partner  
-            </Link>  
+          <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">  
+            <h2 className="text-sm font-medium text-neutral-500">  
+              Approval Queue  
+            </h2>  
+            <p className="mt-4 text-sm text-neutral-600">  
+              Buka daftar request register partner yang masih menunggu approval.  
+            </p>  
+            <div className="mt-6">  
+              <Link  
+                href="/admin/partners"  
+                className="inline-flex rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800"  
+              >  
+                Lihat Request Partner  
+              </Link>  
+            </div>  
           </div>  
         </div>  
       </div>  

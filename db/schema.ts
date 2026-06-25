@@ -74,5 +74,71 @@ export const verification = sqliteTable("verification", {
   createdAt: integer("created_at", { mode: "timestamp" }),
   updatedAt: integer("updated_at", { mode: "timestamp" }),
 });
-
-export const schema = { user, session, account, verification };
+export const services = sqliteTable("services", {  
+  id: text("id").primaryKey(),  
+  name: text("name").notNull().unique(),  
+  description: text("description"),  
+  iconUrl: text("icon_url"),  
+  orderIndex: integer("order_index").notNull().default(0),  
+  active: integer("active", { mode: "boolean" }).notNull().default(true),  
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),  
+  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),  
+});  
+  
+export const subServices = sqliteTable("sub_services", {  
+  id: text("id").primaryKey(),  
+  serviceId: text("service_id")  
+    .notNull()  
+    .references(() => services.id, { onDelete: "cascade" }),  
+  name: text("name").notNull(),  
+  code: text("code").notNull().unique(),  
+  description: text("description"),  
+  orderIndex: integer("order_index").notNull().default(0),  
+  active: integer("active", { mode: "boolean" }).notNull().default(true),  
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),  
+  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),  
+});  
+  
+export const partnerScopes = sqliteTable("partner_scopes", {  
+  id: text("id").primaryKey(),  
+  partnerUserId: text("partner_user_id")  
+    .notNull()  
+    .unique()  
+    .references(() => user.id, { onDelete: "cascade" }),  
+  scopeData: text("scope_data").notNull(),  
+  activeCount: integer("active_count").notNull().default(0),  
+  passedCount: integer("passed_count").notNull().default(0),  
+  progressPercentage: text("progress_percentage").notNull().default("0.00"),  
+  scopeSetAt: integer("scope_set_at", { mode: "timestamp" }),  
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),  
+  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),  
+});  
+  
+export const partnerProgress = sqliteTable("partner_progress", {  
+  id: text("id").primaryKey(),  
+  partnerUserId: text("partner_user_id")  
+    .notNull()  
+    .references(() => user.id, { onDelete: "cascade" }),  
+  subServiceId: text("sub_service_id")  
+    .notNull()  
+    .references(() => subServices.id, { onDelete: "cascade" }),  
+  trackAStatus: text("track_a_status").notNull().default("pending"),  
+  trackBStatus: text("track_b_status").notNull().default("pending"),  
+  overallStatus: text("overall_status").notNull().default("pending"),  
+  trackAPassedAt: integer("track_a_passed_at", { mode: "timestamp" }),  
+  trackBPassedAt: integer("track_b_passed_at", { mode: "timestamp" }),  
+  notes: text("notes"),  
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),  
+  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),  
+});  
+  
+export const schema = {  
+  user,  
+  session,  
+  account,  
+  verification,  
+  services,  
+  subServices,  
+  partnerScopes,  
+  partnerProgress,  
+};

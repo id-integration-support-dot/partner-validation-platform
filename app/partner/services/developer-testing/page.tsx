@@ -24,6 +24,7 @@ const SUB_SERVICES_REGISTRY: Record<string, { id: string; name: string }[]> = {
   ],
 };
 
+// PERBAIKAN: Mengamankan struktur tipe data Promise params agar bertipe string eksplisit
 interface PageProps {
   params: Promise<{ serviceId: string }>;
 }
@@ -31,14 +32,12 @@ interface PageProps {
 export default function DeveloperSiteTestingPage({ params }: PageProps) {
   // Unpack params secara aman di Client Component Next.js terbaru
   const resolvedParams = use(params);
-  const serviceId = resolvedParams.serviceId;
+  const serviceId = resolvedParams?.serviceId || "";
 
   // Ambil daftar sub-service yang sesuai dengan serviceId saat ini
   const availableSubServices = SUB_SERVICES_REGISTRY[serviceId] || [];
 
-  const [selectedSubServiceId, setSelectedSubServiceId] = useState(
-    availableSubServices[0]?.id || ""
-  );
+  const [selectedSubServiceId, setSelectedSubServiceId] = useState("");
   const [caseType, setCaseType] = useState<"positive" | "negative">("positive");
   const [file, setFile] = useState<File | null>(null);
   
@@ -46,11 +45,18 @@ export default function DeveloperSiteTestingPage({ params }: PageProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
+  // Sinkronisasi state selectedSubServiceId ketika data registry berhasil dimuat
+  useEffect(() => {
+    if (availableSubServices.length > 0) {
+      setSelectedSubServiceId(availableSubServices[0].id);
+    }
+  }, [serviceId]);
+
   const fetchSubmissions = async () => {
     try {
       const res = await fetch("/api/track-a/submissions");
       
-      // PERBAIKAN MUTLAK DISINI: Cast menggunakan ': any' untuk melewati pembatasan tipe data standar
+      // PERBAIKAN MUTLAK: Cast menggunakan ': any' untuk melewati pembatasan tipe data standar
       const result: any = await res.json();
       
       if (result && result.success && Array.isArray(result.data)) {
@@ -64,7 +70,9 @@ export default function DeveloperSiteTestingPage({ params }: PageProps) {
   };
 
   useEffect(() => {
-    fetchSubmissions();
+    if (serviceId) {
+      fetchSubmissions();
+    }
   }, [serviceId]);
 
   const convertFileToBase64 = (file: File): Promise<string> => {
@@ -124,7 +132,7 @@ export default function DeveloperSiteTestingPage({ params }: PageProps) {
         }),
       });
 
-      // PERBAIKAN JUGA DISINI: Pastikan penanganan respons pengunggahan aman dari deteksi compiler
+      // PERBAIKAN: Memastikan penanganan respons pengunggahan aman dari deteksi compiler
       const result: any = await res.json();
 
       if (result && result.success) {

@@ -1,8 +1,21 @@
+import Link from "next/link";  
 import { headers } from "next/headers";  
 import { redirect } from "next/navigation";  
 import { getAuth } from "@/lib/auth/auth";  
 import { UserApprovalService } from "@/services/UserApprovalService";  
-import { SignOutButton } from "@/components/sign-out-button";  
+  
+function getStatusBadgeClass(status: string | undefined) {  
+  switch (status) {  
+    case "approved":  
+      return "bg-green-100 text-green-700";  
+    case "pending":  
+      return "bg-amber-100 text-amber-700";  
+    case "rejected":  
+      return "bg-red-100 text-red-700";  
+    default:  
+      return "bg-slate-100 text-slate-700";  
+  }  
+}  
   
 export default async function AdminPartnersPage() {  
   const auth = await getAuth();  
@@ -16,7 +29,6 @@ export default async function AdminPartnersPage() {
   
   const currentUser = session.user as {  
     role?: string;  
-    name?: string;  
   };  
   
   if (currentUser.role !== "super_admin") {  
@@ -24,294 +36,125 @@ export default async function AdminPartnersPage() {
   }  
   
   const approvalService = new UserApprovalService();  
-  const pendingPartners = await approvalService.getPendingPartners();  
+  const partners = await approvalService.getAllPartners();  
   
   return (  
-    <div  
-      style={{  
-        minHeight: "100vh",  
-        backgroundColor: "#f5f5f5",  
-        padding: "32px 24px",  
-      }}  
-    >  
-      <div  
-        style={{  
-          maxWidth: "1200px",  
-          margin: "0 auto",  
-        }}  
-      >  
-        <div  
-          style={{  
-            display: "flex",  
-            justifyContent: "space-between",  
-            alignItems: "flex-start",  
-            marginBottom: "24px",  
-          }}  
-        >  
-          <div>  
-            <h1  
-              style={{  
-                fontSize: "36px",  
-                fontWeight: 700,  
-                color: "#171717",  
-                margin: 0,  
-              }}  
-            >  
-              Request Register Partner  
-            </h1>  
-            <p  
-              style={{  
-                marginTop: "8px",  
-                fontSize: "16px",  
-                color: "#737373",  
-              }}  
-            >  
-              Review partner yang masih menunggu approval.  
-            </p>  
-          </div>  
-  
-          <SignOutButton />  
+    <div className="px-4 py-8">  
+      <div className="mx-auto w-full max-w-7xl space-y-6">  
+        <div>  
+          <h1 className="text-3xl font-semibold tracking-tight text-slate-900">  
+            Partners  
+          </h1>  
+          <p className="mt-2 text-sm text-slate-500">  
+            Lihat ringkasan partner, status registrasi, dan akses detail assessment.  
+          </p>  
         </div>  
   
-        <div  
-          style={{  
-            backgroundColor: "#ffffff",  
-            border: "1px solid #e5e5e5",  
-            borderRadius: "16px",  
-            overflow: "hidden",  
-            boxShadow: "0 1px 3px rgba(0,0,0,0.06)",  
-          }}  
-        >  
-          <div  
-            style={{  
-              padding: "16px 20px",  
-              borderBottom: "1px solid #e5e5e5",  
-              fontSize: "16px",  
-              fontWeight: 600,  
-              color: "#171717",  
-            }}  
-          >  
-            Pending Requests  
+        <div className="rounded-lg border border-slate-200 bg-white shadow-sm">  
+          <div className="border-b border-slate-200 px-6 py-4">  
+            <h2 className="text-sm font-medium text-slate-900">  
+              Partner Directory  
+            </h2>  
           </div>  
   
-          {pendingPartners.length === 0 ? (  
-            <div  
-              style={{  
-                padding: "32px 20px",  
-                textAlign: "center",  
-                color: "#737373",  
-                fontSize: "14px",  
-              }}  
-            >  
-              Tidak ada request register yang pending.  
+          {partners.length === 0 ? (  
+            <div className="px-6 py-10 text-center text-sm text-slate-500">  
+              Belum ada partner terdaftar.  
             </div>  
           ) : (  
-            <div style={{ overflowX: "auto" }}>  
-              <table  
-                style={{  
-                  width: "100%",  
-                  borderCollapse: "collapse",  
-                  tableLayout: "fixed",  
-                }}  
-              >  
+            <div className="overflow-x-auto">  
+              <table className="w-full min-w-[1100px] text-sm">  
                 <thead>  
-                  <tr style={{ backgroundColor: "#fafafa" }}>  
-                    <th  
-                      style={{  
-                        textAlign: "left",  
-                        padding: "14px 20px",  
-                        fontSize: "14px",  
-                        fontWeight: 600,  
-                        color: "#404040",  
-                        borderBottom: "1px solid #e5e5e5",  
-                        width: "18%",  
-                      }}  
-                    >  
+                  <tr className="border-b border-slate-200 bg-slate-50">  
+                    <th className="px-6 py-4 text-left font-medium text-slate-700">  
                       Nama  
                     </th>  
-                    <th  
-                      style={{  
-                        textAlign: "left",  
-                        padding: "14px 20px",  
-                        fontSize: "14px",  
-                        fontWeight: 600,  
-                        color: "#404040",  
-                        borderBottom: "1px solid #e5e5e5",  
-                        width: "28%",  
-                      }}  
-                    >  
+                    <th className="px-6 py-4 text-left font-medium text-slate-700">  
                       Email  
                     </th>  
-                    <th  
-                      style={{  
-                        textAlign: "left",  
-                        padding: "14px 20px",  
-                        fontSize: "14px",  
-                        fontWeight: 600,  
-                        color: "#404040",  
-                        borderBottom: "1px solid #e5e5e5",  
-                        width: "20%",  
-                      }}  
-                    >  
+                    <th className="px-6 py-4 text-left font-medium text-slate-700">  
                       Perusahaan  
                     </th>  
-                    <th  
-                      style={{  
-                        textAlign: "left",  
-                        padding: "14px 20px",  
-                        fontSize: "14px",  
-                        fontWeight: 600,  
-                        color: "#404040",  
-                        borderBottom: "1px solid #e5e5e5",  
-                        width: "14%",  
-                      }}  
-                    >  
+                    <th className="px-6 py-4 text-left font-medium text-slate-700">  
                       Status  
                     </th>  
-                    <th  
-                      style={{  
-                        textAlign: "left",  
-                        padding: "14px 20px",  
-                        fontSize: "14px",  
-                        fontWeight: 600,  
-                        color: "#404040",  
-                        borderBottom: "1px solid #e5e5e5",  
-                        width: "20%",  
-                      }}  
-                    >  
-                      Action  
+                    <th className="px-6 py-4 text-left font-medium text-slate-700">  
+                      Actions  
                     </th>  
                   </tr>  
                 </thead>  
-  
                 <tbody>  
-                  {pendingPartners.map((partner) => (  
-                    <tr key={partner.id}>  
-                      <td  
-                        style={{  
-                          padding: "16px 20px",  
-                          fontSize: "14px",  
-                          color: "#171717",  
-                          borderBottom: "1px solid #f0f0f0",  
-                          verticalAlign: "middle",  
-                        }}  
-                      >  
+                  {partners.map((partner) => (  
+                    <tr  
+                      key={partner.id}  
+                      className="border-b border-slate-100 last:border-b-0"  
+                    >  
+                      <td className="px-6 py-4 text-slate-900">  
                         {partner.name}  
                       </td>  
-  
-                      <td  
-                        style={{  
-                          padding: "16px 20px",  
-                          fontSize: "14px",  
-                          color: "#404040",  
-                          borderBottom: "1px solid #f0f0f0",  
-                          verticalAlign: "middle",  
-                          wordBreak: "break-word",  
-                        }}  
-                      >  
+                      <td className="px-6 py-4 text-slate-600">  
                         {partner.email}  
                       </td>  
-  
-                      <td  
-                        style={{  
-                          padding: "16px 20px",  
-                          fontSize: "14px",  
-                          color: "#404040",  
-                          borderBottom: "1px solid #f0f0f0",  
-                          verticalAlign: "middle",  
-                        }}  
-                      >  
+                      <td className="px-6 py-4 text-slate-600">  
                         {partner.companyName ?? "-"}  
                       </td>  
-  
-                      <td  
-                        style={{  
-                          padding: "16px 20px",  
-                          borderBottom: "1px solid #f0f0f0",  
-                          verticalAlign: "middle",  
-                        }}  
-                      >  
+                      <td className="px-6 py-4">  
                         <span  
-                          style={{  
-                            display: "inline-block",  
-                            padding: "6px 10px",  
-                            borderRadius: "999px",  
-                            backgroundColor: "#fef3c7",  
-                            color: "#92400e",  
-                            fontSize: "12px",  
-                            fontWeight: 600,  
-                            textTransform: "capitalize",  
-                          }}  
+                          className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${getStatusBadgeClass(  
+                            partner.status  
+                          )}`}  
                         >  
                           {partner.status}  
                         </span>  
                       </td>  
-  
-                      <td  
-                        style={{  
-                          padding: "16px 20px",  
-                          borderBottom: "1px solid #f0f0f0",  
-                          verticalAlign: "middle",  
-                        }}  
-                      >  
-                        <div  
-                          style={{  
-                            display: "flex",  
-                            gap: "10px",  
-                            alignItems: "center",  
-                            flexWrap: "wrap",  
-                          }}  
-                        >  
-                          <form  
-                            action={`/api/admin/partners/${partner.id}/approve`}  
-                            method="post"  
-                            style={{ margin: 0 }}  
+                      <td className="px-6 py-4">  
+                        <div className="flex flex-wrap gap-2">  
+                          <Link  
+                            href={`/admin/partners/${partner.id}`}  
+                            className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"  
                           >  
-                            <button  
-                              type="submit"  
-                              style={{  
-                                backgroundColor: "#16a34a",  
-                                color: "#ffffff",  
-                                border: "none",  
-                                borderRadius: "8px",  
-                                padding: "10px 16px",  
-                                fontSize: "14px",  
-                                fontWeight: 600,  
-                                cursor: "pointer",  
-                                minWidth: "96px",  
-                              }}  
-                            >  
-                              Approve  
-                            </button>  
-                          </form>  
+                            Detail  
+                          </Link>  
   
-                          <form  
-                            action={`/api/admin/partners/${partner.id}/reject`}  
-                            method="post"  
-                            style={{ margin: 0 }}  
+                          <Link  
+                            href={`/admin/partners/${partner.id}/assessment`}  
+                            className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"  
                           >  
-                            <input  
-                              type="hidden"  
-                              name="reason"  
-                              value="Rejected by admin"  
-                            />  
-                            <button  
-                              type="submit"  
-                              style={{  
-                                backgroundColor: "#dc2626",  
-                                color: "#ffffff",  
-                                border: "none",  
-                                borderRadius: "8px",  
-                                padding: "10px 16px",  
-                                fontSize: "14px",  
-                                fontWeight: 600,  
-                                cursor: "pointer",  
-                                minWidth: "96px",  
-                              }}  
-                            >  
-                              Reject  
-                            </button>  
-                          </form>  
+                            Assessment  
+                          </Link>  
+  
+                          {partner.status === "pending" ? (  
+                            <>  
+                              <form  
+                                action={`/api/admin/partners/${partner.id}/approve`}  
+                                method="post"  
+                              >  
+                                <button  
+                                  type="submit"  
+                                  className="rounded-md bg-[#0d5ddf] px-3 py-2 text-sm font-medium text-white hover:bg-[#0b4fc2]"  
+                                >  
+                                  Approve  
+                                </button>  
+                              </form>  
+  
+                              <form  
+                                action={`/api/admin/partners/${partner.id}/reject`}  
+                                method="post"  
+                              >  
+                                <input  
+                                  type="hidden"  
+                                  name="reason"  
+                                  value="Rejected by administrator"  
+                                />  
+                                <button  
+                                  type="submit"  
+                                  className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-100"  
+                                >  
+                                  Reject  
+                                </button>  
+                              </form>  
+                            </>  
+                          ) : null}  
                         </div>  
                       </td>  
                     </tr>  

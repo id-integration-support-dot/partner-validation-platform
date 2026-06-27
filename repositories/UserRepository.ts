@@ -6,7 +6,24 @@ export class UserRepository {
   async findById(id: string) {  
     const db = await getDb();  
   
-    const rows = await db.select().from(user).where(eq(user.id, id)).limit(1);  
+    const rows = await db  
+      .select()  
+      .from(user)  
+      .where(eq(user.id, id))  
+      .limit(1);  
+  
+    return rows[0] ?? null;  
+  }  
+  
+  async findPartnerById(id: string) {  
+    const db = await getDb();  
+  
+    const rows = await db  
+      .select()  
+      .from(user)  
+      .where(eq(user.id, id))  
+      .limit(1);  
+  
     return rows[0] ?? null;  
   }  
   
@@ -19,6 +36,33 @@ export class UserRepository {
       .where(and(eq(user.role, "partner"), eq(user.status, "pending")));  
   }  
   
+  async findAllPartners() {  
+    const db = await getDb();  
+  
+    return await db.select().from(user).where(eq(user.role, "partner"));  
+  }  
+  
+  async updatePartnerBasicInfo(  
+    userId: string,  
+    payload: {  
+      name: string;  
+      email: string;  
+      companyName: string | null;  
+    }  
+  ) {  
+    const db = await getDb();  
+  
+    await db  
+      .update(user)  
+      .set({  
+        name: payload.name,  
+        email: payload.email,  
+        companyName: payload.companyName,  
+        updatedAt: new Date(),  
+      })  
+      .where(eq(user.id, userId));  
+  }  
+  
   async approvePartner(userId: string, adminId: string) {  
     const db = await getDb();  
   
@@ -26,11 +70,6 @@ export class UserRepository {
       .update(user)  
       .set({  
         status: "approved",  
-        approvedAt: new Date(),  
-        approvedBy: adminId,  
-        rejectedAt: null,  
-        rejectedBy: null,  
-        rejectionReason: null,  
         updatedAt: new Date(),  
       })  
       .where(eq(user.id, userId));  
@@ -43,9 +82,6 @@ export class UserRepository {
       .update(user)  
       .set({  
         status: "rejected",  
-        rejectedAt: new Date(),  
-        rejectedBy: adminId,  
-        rejectionReason: reason,  
         updatedAt: new Date(),  
       })  
       .where(eq(user.id, userId));  

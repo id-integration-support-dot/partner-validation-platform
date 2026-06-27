@@ -7,6 +7,31 @@ export class UserApprovalService {
     return await this.userRepository.findPendingPartners();  
   }  
   
+  async getAllPartners() {  
+    return await this.userRepository.findAllPartners();  
+  }  
+  
+  async updatePartnerBasicInfo(  
+    targetUserId: string,  
+    payload: {  
+      name: string;  
+      email: string;  
+      companyName: string | null;  
+    }  
+  ) {  
+    const target = await this.userRepository.findById(targetUserId);  
+  
+    if (!target) {  
+      throw new Error("User not found");  
+    }  
+  
+    if (target.role !== "partner") {  
+      throw new Error("Only partner can be updated");  
+    }  
+  
+    await this.userRepository.updatePartnerBasicInfo(targetUserId, payload);  
+  }  
+  
   async approvePartner(targetUserId: string, adminUserId: string) {  
     const target = await this.userRepository.findById(targetUserId);  
   
@@ -25,7 +50,11 @@ export class UserApprovalService {
     await this.userRepository.approvePartner(targetUserId, adminUserId);  
   }  
   
-  async rejectPartner(targetUserId: string, adminUserId: string, reason: string) {  
+  async rejectPartner(  
+    targetUserId: string,  
+    adminUserId: string,  
+    reason: string  
+  ) {  
     const target = await this.userRepository.findById(targetUserId);  
   
     if (!target) {  

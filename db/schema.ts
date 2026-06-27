@@ -131,7 +131,68 @@ export const partnerProgress = sqliteTable("partner_progress", {
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),  
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),  
 });  
+
+export const trackADocuments = sqliteTable("track_a_documents", {  
+  id: text("id").primaryKey(),  
   
+  partnerUserId: text("partner_user_id")  
+    .notNull()  
+    .references(() => user.id, { onDelete: "cascade" }),  
+  
+  serviceId: text("service_id")  
+    .notNull()  
+    .references(() => services.id, { onDelete: "cascade" }),  
+  
+  subServiceId: text("sub_service_id")  
+    .notNull()  
+    .references(() => subServices.id, { onDelete: "cascade" }),  
+  
+  caseType: text("case_type", {  
+    enum: ["positive", "negative"],  
+  }).notNull(),  
+  
+  status: text("status", {  
+    enum: [  
+      "draft",  
+      "uploaded",  
+      "validated",  
+      "waiting_sync",  
+      "synced",  
+      "archived",  
+    ],  
+  })  
+    .notNull()  
+    .default("draft"),  
+  
+  fileName: text("file_name").notNull(),  
+  mimeType: text("mime_type").notNull(),  
+  fileSize: integer("file_size").notNull(),  
+  
+  uploadedAt: integer("uploaded_at", { mode: "timestamp" }),  
+  syncedAt: integer("synced_at", { mode: "timestamp" }),  
+  syncedToDrive: integer("synced_to_drive", { mode: "boolean" })  
+    .notNull()  
+    .default(false),  
+  
+  driveFileId: text("drive_file_id"),  
+  
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),  
+  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),  
+});  
+  
+export const trackADocumentContents = sqliteTable("track_a_document_contents", {  
+  id: text("id").primaryKey(),  
+  
+  documentId: text("document_id")  
+    .notNull()  
+    .unique()  
+    .references(() => trackADocuments.id, { onDelete: "cascade" }),  
+  
+  base64Content: text("base64_content").notNull(),  
+  
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),  
+});
+
 export const schema = {  
   user,  
   session,  
@@ -140,5 +201,7 @@ export const schema = {
   services,  
   subServices,  
   partnerScopes,  
-  partnerProgress,  
+  partnerProgress,
+  trackADocuments,  
+  trackADocumentContents,  
 };

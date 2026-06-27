@@ -1,82 +1,88 @@
 import Link from "next/link";  
-import { headers } from "next/headers";  
-import { redirect } from "next/navigation";  
-import { getAuth } from "@/lib/auth/auth";  
-import { SignOutButton } from "@/components/sign-out-button";  
   
-export default async function AdminDashboardPage() {  
-  const auth = await getAuth();  
-  const session = await auth.api.getSession({  
-    headers: await headers(),  
-  });  
-  
-  if (!session) {  
-    redirect("/login");  
-  }  
-  
-  const user = session.user as {  
-    role?: string;  
-    name?: string;  
-    email?: string;  
-  };  
-  
-  if (user.role !== "super_admin") {  
-    redirect("/dashboard");  
-  }  
-  
+export default function AdminDashboardPage() {  
   return (  
-    <div className="min-h-screen bg-neutral-50">  
-      <div className="mx-auto max-w-6xl px-6 py-8">  
-        <div className="mb-8 flex items-center justify-between">  
-          <div>  
-            <h1 className="text-2xl font-semibold text-neutral-900">  
-              Admin Dashboard  
-            </h1>  
-            <p className="mt-1 text-sm text-neutral-500">  
-              Kelola approval partner dari dashboard administrator.  
-            </p>  
-          </div>  
-          <SignOutButton />  
+    <div className="px-4 py-8">  
+      <div className="mx-auto w-full max-w-7xl space-y-6">  
+        <div>  
+          <h1 className="text-3xl font-semibold tracking-tight text-slate-900">  
+            Dashboard  
+          </h1>  
+          <p className="mt-2 text-sm text-slate-500">  
+            Ringkasan aktivitas pengujian partner dan proses approval.  
+          </p>  
         </div>  
   
-        <div className="grid gap-6 md:grid-cols-2">  
-          <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">  
-            <h2 className="text-sm font-medium text-neutral-500">  
-              Administrator  
-            </h2>  
-            <div className="mt-4 space-y-3 text-sm">  
-              <div className="flex justify-between border-b border-neutral-100 pb-3">  
-                <span className="text-neutral-500">Nama</span>  
-                <span className="font-medium text-neutral-900">  
-                  {user.name ?? "-"}  
-                </span>  
-              </div>  
-              <div className="flex justify-between border-b border-neutral-100 pb-3">  
-                <span className="text-neutral-500">Email</span>  
-                <span className="font-medium text-neutral-900">  
-                  {user.email ?? "-"}  
-                </span>  
-              </div>  
-              <div className="flex justify-between">  
-                <span className="text-neutral-500">Role</span>  
-                <span className="font-medium text-neutral-900">  
-                  {user.role ?? "-"}  
-                </span>  
-              </div>  
-            </div>  
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">  
+          <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">  
+            <p className="text-sm text-slate-500">Total Partners</p>  
+            <p className="mt-3 text-3xl font-semibold text-slate-900">10</p>  
+            <p className="mt-2 text-sm text-slate-400">  
+              Total partner terdaftar  
+            </p>  
           </div>  
   
-          <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">  
-            <h2 className="text-sm font-medium text-neutral-500">  
+          <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">  
+            <p className="text-sm text-slate-500">Pending Approval</p>  
+            <p className="mt-3 text-3xl font-semibold text-slate-900">2</p>  
+            <p className="mt-2 text-sm text-slate-400">  
+              Menunggu review administrator  
+            </p>  
+          </div>  
+  
+          <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">  
+            <p className="text-sm text-slate-500">Submissions</p>  
+            <p className="mt-3 text-3xl font-semibold text-slate-900">10</p>  
+            <p className="mt-2 text-sm text-slate-400">  
+              Total submission partner  
+            </p>  
+          </div>  
+  
+          <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">  
+            <p className="text-sm text-slate-500">Pass Rate</p>  
+            <p className="mt-3 text-3xl font-semibold text-slate-900">50%</p>  
+            <p className="mt-2 text-sm text-slate-400">  
+              Rata-rata kelulusan pengujian  
+            </p>  
+          </div>  
+        </div>  
+  
+        <div className="grid gap-4 xl:grid-cols-3">  
+          <div className="rounded-lg border border-slate-200 bg-white p-8 shadow-sm xl:col-span-2">  
+            <h2 className="text-lg font-semibold text-slate-900">  
+              Activity Overview  
+            </h2>  
+            <p className="mt-2 text-sm text-slate-500">  
+              Ringkasan aktivitas partner, progress pengujian, dan submission.  
+            </p>  
+  
+            <div className="mt-6 h-72 rounded-lg border border-dashed border-slate-300 bg-slate-50" />  
+          </div>  
+  
+          <div className="rounded-lg border border-slate-200 bg-white p-8 shadow-sm">  
+            <h2 className="text-lg font-semibold text-slate-900">  
               Approval Queue  
             </h2>  
-            <p className="mt-4 text-sm text-neutral-600">  
-              Buka daftar request register partner yang masih menunggu approval.  
+            <p className="mt-2 text-sm text-slate-500">  
+              Akses daftar request register partner yang masih menunggu approval.  
             </p>  
+  
+            <div className="mt-6 space-y-3">  
+              <div className="rounded-md bg-slate-50 p-4 text-sm text-slate-600">  
+                Partner pending review: 2  
+              </div>  
+              <div className="rounded-md bg-slate-50 p-4 text-sm text-slate-600">  
+                Partner approved: 8  
+              </div>  
+              <div className="rounded-md bg-slate-50 p-4 text-sm text-slate-600">  
+                Assessment completed: 5  
+              </div>  
+            </div>  
+  
             <div className="mt-6">  
               <Link  
                 href="/admin/partners"  
-                className="inline-flex rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800"  
+                className="inline-flex rounded-lg bg-[#0d5ddf] px-4 py-2 text-sm font-medium text-white hover:bg-[#0b4fc2]"  
               >  
                 Lihat Request Partner  
               </Link>  
